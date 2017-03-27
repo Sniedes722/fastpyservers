@@ -1,2 +1,5 @@
 /.c9
 /.git
+/.venv
+/testing
+/fastwebserver
