@@ -45,8 +45,15 @@ def handler(request, response):
     # give client a chance to respond, timeout after 10 seconds
     data = yield from asyncio.wait_for(request.read(1024),
                                        timeout=10.0)
-    sdata = data.decode().rstrip()
-    log.info("%s", sdata)
+    sdata = data.decode().rstrip().replace('\r',' ').replace('\n','')
+    method = sdata.split(' ')[0]
+    url = sdata.split(' ')[1]
+    http_type = sdata.split(' ')[2]
+    headers = sdata.split(' ')[3:]
+    log.info("Method: %s", method)
+    log.info("URL: %s", url)
+    log.info("HTTP Type: %s", http_type)
+    log.info("Headers: %s", headers)
 
 
 def main():
