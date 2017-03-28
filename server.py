@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 clients = {}  # task -> (reader, writer)
 
 def ask_exit(signame, loop):
-    print("Exiting fastwebserver %s" % signame)
+    print("Exiting Sneed Web Server %s" % signame)
     loop.stop()
 
 # this is the function causing the issues
@@ -34,21 +34,8 @@ async def accept_client(request, response):
     task.add_done_callback(client_done)
 
 async def handler(request, response):
-    http_response = b'''HTTP/1.1 200 OK
-    Server: Sneed/0.0.1 (Linux x86_64)
-    Last-Modified: Mon, 27 Mar 2017 11:33:56 EST
-    Content-Length: 12
-    Content-Type: text/html
-    Connection: Closed
-    
-    <html>
-    <body>
-    <h1>Hello, World!</h1>
-    </body>
-    </html>
-    '''
-    response.write(http_response)
-
+    http_body = '<html><body><h1>Hello, World!</h1></body></html>'
+    test_response = 200
     # give client a chance to respond, timeout after 10 seconds
     data = await request.read(1024)
     sdata = data.decode().rstrip().replace('\r',' ').replace('\n','')
@@ -61,8 +48,17 @@ async def handler(request, response):
     log.info("URL: %s", url)
     log.info("HTTP Type: %s", http_type)
     log.info("Headers: %s", headers)
+    log.info("%s", len(http_body))
     
-    response.write(http_response)
+    response.write(b'HTTP/1.1 200 OK\r\n')
+    response.write(b'Server: Sneed/0.0.1 (Linux x86_64)\r\n')
+    response.write(b'Last-Modified: Mon, 27 Mar 2017 11:33:56 EST\r\n')
+    response.write(b'Content-Length: 48\r\n')
+    response.write(b'Content-Type: text/html\r\n')
+    response.write(b'Connection: Closed\r\n')
+    response.write(b'\r\n')
+    response.write(b'<html><body><h1>Sneed Async Python Web Server</h1></body></html>\r\n')
+    #print(r)
 
 
 def main():
@@ -71,7 +67,7 @@ def main():
     host = "0.0.0.0"
     port = os.environ['PORT']
     f = asyncio.start_server(accept_client, host=host, port=port, loop=loop)
-    log.info('Fast WebPy Server running @ http://{}:{}'.format(host, port))
+    log.info('Sneed Web Server running @ http://{}:{}'.format(host, port))
     for signame in ('SIGINT', 'SIGTERM'):
         loop.add_signal_handler(getattr(signal, signame),
                                 functools.partial(ask_exit, signame, loop))
