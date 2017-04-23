@@ -13,13 +13,13 @@ class Request(dict):
 		'_url', '_http_type', 'data', 
 	)
 
-	def __init__(self, data, app=None):
-		_first_line = data.decode().rstrip("\n").split('\n')[0].split(' ')
-		
-		self.app = app
-		self._method = _first_line[0]
-		self._url = _first_line[1]
-		self._http_type = _first_line[2]
+	def __init__(self, data=None, app=None):
+		self.data = data
+
+	def parser(self):
+		prse = self.data.rstrip("\n").split('\n')[0].split(' ')
+		self._method = prse[0]
+		self._url = prse[1]
 		
 	@property
 	def method(self):
@@ -28,7 +28,3 @@ class Request(dict):
 	@property
 	def url(self):
 		return self._url
-		
-	@property
-	def http_type(self):
-		return self._http_type

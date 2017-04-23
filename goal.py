@@ -34,3 +34,14 @@ app.handler('/queue', methods['GET','POST'], json)
 
 if __name__ == '__main__':
 	app.run()
+
+## Route handlers elder version
+async def router_handler(route, method, content_type, body):
+	Response(body=body, content_type
+
+## Error Handler
+async def handle_method_error():
+	Response(body='Method not allowed for URL', status=405)
+
+async def handle_method_error():
+	Response(body='URL not found', status=404)

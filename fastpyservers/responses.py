@@ -99,7 +99,7 @@ class Response(dict):
 		self.headers = headers or {}
 		
 		self.status = status
-		self.status_code = COMMON_STATUS_CODES.get(self.status)
+		self.status_code = ALL_STATUS_CODES.get(self.status)
 		
 	def output(self, version="1.1", keep_alive=False, keep_alive_timeout=None):
 		timeout_header = b''

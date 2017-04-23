@@ -13,6 +13,7 @@ from fastpyservers.constants import HTTP_METHODS
 from fastpyservers.responses import BaseHTTPResponse, Response
 from fastpyservers.requests import BaseHTTPRequest, Request
 from fastpyservers.logger import log
+from fastpyservers.routes import router
 
 clients = {}  # task -> (reader, writer)
 
@@ -22,7 +23,7 @@ def ask_exit(signame, loop):
 
 ## This should eventually be part of a worker
 async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
-	task = asyncio.ensure_future(handler("/event", BaseHTTPRequest, BaseHTTPResponse))
+	task = asyncio.ensure_future(route_handler("/index", 'GET', BaseHTTPRequest, BaseHTTPResponse))
 	clients[task] = (BaseHTTPRequest, BaseHTTPResponse)
 		
 	def client_done(task):
@@ -33,19 +34,28 @@ async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
 
 
 ## This should be moved to app.py, as it's what we want people to be writing
-async def handler(url, BaseHTTPRequest, BaseHTTPResponse):
+async def route_handler(url, method, BaseHTTPRequest, BaseHTTPResponse):
 	data = await BaseHTTPRequest.read(1024)
-	#req = Request(data=data)
-	resp = Response(body='{"sneed":"server"}', content_type="application/json")
+	sdata = data.decode()
+	req = Request(data=sdata)
+	req.parser()
+	if req.url == url and req.method == method:
+		resp = Response(body='Sneed Server', content_type="text/html")
+	elif req.url != url:
+		resp = Response(body='URL Not Found', status=404)
+	elif req.method != method:
+		resp = Response(body='Method Not Allowed', status=405)
+	else:
+		resp = Response(body='Internal Server Error', status=500)
 	
-	return await BaseHTTPResponse.write(resp.output())
+	x = resp.output()
 
-
+	return BaseHTTPResponse.write(x)
 
 
 class FastHTTPServer:
 
-	def run_server(self, host="0.0.0.0", port=8000):
+	def run_server(self, app, host="0.0.0.0", port=8000):
 		loop = uvloop.new_event_loop()
 		asyncio.set_event_loop(loop)
 		f = asyncio.start_server(accept_client, host=host, port=port, loop=loop)
