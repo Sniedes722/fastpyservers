@@ -1,10 +1,5 @@
 from asyncio.streams import StreamReader
 
-async def get_request(BaseHTTPRequest, Request):
-	data = await BaseHTTPRequest.read(1024)
-	return Request._parse_request(data=data)
-
-
 class BaseHTTPRequest(StreamReader):
 
 	def __init__(self, name=None):
@@ -14,13 +9,25 @@ class BaseHTTPRequest(StreamReader):
 class Request(dict):
 	
 	__slots__ = (
-		'app', 'headers', 'body',  
+		'app', 'headers', 'body', '_method', 
+		'_url', '_http_type', 'data', 
 	)
 
-	def __init__(self, app=None):
+	def __init__(self, data, app=None):
+		_first_line = data.decode().rstrip("\n").split('\n')[0].split(' ')
 		self.app = app
-		self.headers = None
-		self.body = None
-
-	def _parse_request(self, data):
-		return data
+		self._method = _first_line[0]
+		self._url = _first_line[1]
+		self._http_type = _first_line[2]
+		
+	@property
+	def method(self):
+		return self._method
+		
+	@property
+	def url(self):
+		return self._url
+		
+	@property
+	def http_type(self):
+		return self._http_type

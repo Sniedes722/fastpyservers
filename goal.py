@@ -1,45 +1,36 @@
-from fastpyservers import AsyncHTTPServer, response
+from fastpyservers import AsyncWebApp
+from fastpyservers.requests import methods
+from fastpyservers.responses import field, json
 
-ws = AsyncHTTPServer('sms_endpoint')
+app = AsyncWebApp('v1')
 
-active_numbers = []
+app.queue([
+	
+	{"task": "Task 1", "on": field.datetime('')},
+	{"task": "Task 2", "on": field.datetime('')},
+	{"task": "Task 3", "on": field.datetime('')}
+	
+	
+])
 
-@ws.route('/')
-async def index(request):
-	if request.method == 'GET':
-		return response.redirect('/signup')
-	elif request.method == 'POST':
-		return response.redirect('/reply')
-	else:
-		return response.status("404")
+app.model("users": {
+	"first_name": field.string(1, 60),
+	"last_name": field.string(1, 100),
+	"age": field.integer(>, 18),
+	"birthday": field.datetime(''),
+	"stocks": [
+		{
+			"price": field.price(USD), 
+			"ticker_name": field.string(=, 3)
+		}
+	
+	]
+	
+})
 
-@ws.route('/signup', methods=['GET'])
-async def signup(request):
-	html_body = """
-	<html><body>
-	<form method="POST" action="/add_number">
-	  Enter your number to recieve our texts:<br>
-	  <input type="text" name="phone_no" value=""><br><br>
-	  <input type="submit" value="Submit">
-	</form> 
-	</html></body>
-	"""
-
-	return response.html(html_body)
-
-@ws.route('/add_number', methods=['POST'])
-async def add_number(request):
-	activate = active_numbers.append(request.args.value('phone_no'))
-	return response.json({"Number Added":"Text 2672294439 to get more details"})
-
-@ws.route('/reply', methods=['POST'])
-async def reply_sms(request):
-	if request.number is in active_numbers:
-		return response.sms('Thanks for signing up')
-	else:
-		return response.sms('Visit our site to sign up')
+app.handler(model, methods['POST'], json) ## will return http://0.0.0.0:8080/users/?first_name=Shawn&last_name=Needz
+app.handler('/queue', methods['GET','POST'], json)
 
 
-		
-
-
+if __name__ == '__main__':
+	app.run()
