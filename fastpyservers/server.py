@@ -22,7 +22,7 @@ def ask_exit(signame, loop):
 
 ## This should eventually be part of a worker
 async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
-	task = asyncio.ensure_future(_handler("/event", BaseHTTPRequest, BaseHTTPResponse))
+	task = asyncio.ensure_future(handler("/event", BaseHTTPRequest, BaseHTTPResponse))
 	clients[task] = (BaseHTTPRequest, BaseHTTPResponse)
 		
 	def client_done(task):
@@ -35,10 +35,10 @@ async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
 
 
 ## This should be moved to app.py, as it's what we want people to be writing
-async def _handler(url, BaseHTTPRequest, BaseHTTPResponse):
+async def handler(url, BaseHTTPRequest, BaseHTTPResponse):
 	data = await BaseHTTPRequest.read(1024)
 	req = Request(data=data)
-	resp = Response()
+	resp = Response(body="{'sneed':'server'}", content_type="application/json")
 	print(resp.output())
 	return BaseHTTPResponse.write(resp.output())
 

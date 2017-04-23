@@ -15,5 +15,6 @@ class AsyncWebApp:
 	def run(self, host="0.0.0.0", port=8080):
 		run_logger()
 		self.server.run_server(host, port)
+		
 
 
