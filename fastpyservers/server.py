@@ -28,9 +28,7 @@ async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
 	def client_done(task):
 		del clients[task]
 		BaseHTTPResponse.close()
-		log.info("End Connection")
-		
-	log.info("New Connection")
+
 	task.add_done_callback(client_done)
 
 
@@ -38,8 +36,7 @@ async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
 async def handler(url, BaseHTTPRequest, BaseHTTPResponse):
 	data = await BaseHTTPRequest.read(1024)
 	req = Request(data=data)
-	resp = Response(body="{'sneed':'server'}", content_type="application/json")
-	print(resp.output())
+	resp = Response(body='{"sneed":"server"}', content_type="application/json")
 	return BaseHTTPResponse.write(resp.output())
 
 
