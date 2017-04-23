@@ -35,9 +35,11 @@ async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
 ## This should be moved to app.py, as it's what we want people to be writing
 async def handler(url, BaseHTTPRequest, BaseHTTPResponse):
 	data = await BaseHTTPRequest.read(1024)
-	req = Request(data=data)
+	#req = Request(data=data)
 	resp = Response(body='{"sneed":"server"}', content_type="application/json")
-	return BaseHTTPResponse.write(resp.output())
+	
+	return await BaseHTTPResponse.write(resp.output())
+
 
 
 

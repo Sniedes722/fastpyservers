@@ -15,6 +15,7 @@ class Request(dict):
 
 	def __init__(self, data, app=None):
 		_first_line = data.decode().rstrip("\n").split('\n')[0].split(' ')
+		
 		self.app = app
 		self._method = _first_line[0]
 		self._url = _first_line[1]
