@@ -22,7 +22,7 @@ def ask_exit(signame, loop):
 	loop.stop()
 
 ## This should eventually be part of a worker
-async def accept_client(BaseHTTPRequest, BaseHTTPResponse):
+async def accept_client(tasks, BaseHTTPRequest, BaseHTTPResponse):
 	task = asyncio.ensure_future(route_handler("/index", 'GET', BaseHTTPRequest, BaseHTTPResponse))
 	clients[task] = (BaseHTTPRequest, BaseHTTPResponse)
 		

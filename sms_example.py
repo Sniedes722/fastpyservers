@@ -30,7 +30,7 @@ async def signup(request):
 @ws.route('/add_number', methods=['POST'])
 async def add_number(request):
 	activate = active_numbers.append(request.args.value('phone_no'))
-	return response.json({"Number Added":"Text 2672294439 to get more details"})
+	return response.json({"Number Added":"Text 9999999999 to get more details"})
 
 @ws.route('/reply', methods=['POST'])
 async def reply_sms(request):
